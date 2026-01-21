@@ -1,90 +1,108 @@
 <!doctype html>
 <html lang="en">
   <head>
-	<meta charset="UTF-8" />
-	<title>Approosters - Polaris web components playground</title>
+    <meta charset="UTF-8" />
+    <title>Approosters - Polaris web components playground</title>
 
-	<!-- CodeMirror -->
-	<link
-	  rel="stylesheet"
-	  href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"
-	/>
-	<link
-	  rel="stylesheet"
-	  href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css"
-	/>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+    <!-- CodeMirror -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
 
-	<style>
-	  :root {
-		--bg-main: #1e1e1e;
-		--bg-header: #252526;
-		--border-color: #333333;
-		--text-primary: #cccccc;
-	  }
+    <style>
+      :root {
+        --bg-main: #1e1e1e;
+        --bg-header: #252526;
+        --border-color: #333333;
+        --text-primary: #cccccc;
+      }
 
-	  body {
-		margin: 0;
-		height: 100vh;
-		display: flex;
-		flex-direction: column;
-		background: var(--bg-main);
-		color: var(--text-primary);
-		font-family:
-		  system-ui,
-		  -apple-system,
-		  sans-serif;
-	  }
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-main);
+        color: var(--text-primary);
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
 
-	  .header {
-		padding: 12px 20px;
-		background: var(--bg-header);
-		border-bottom: 1px solid var(--border-color);
-	  }
+      .header {
+        padding: 12px 20px;
+        background: var(--bg-header);
+        border-bottom: 1px solid var(--border-color);
+      }
 
-	  .header h1 {
-		font-size: 14px;
-		font-weight: 600;
-		margin: 0;
-		letter-spacing: 0.5px;
-		text-transform: uppercase;
-	  }
+      .header h1 {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
 
-	  .container {
-		flex: 1;
-		display: flex;
-		overflow: hidden;
-	  }
+      .container {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+      }
 
-	  /* CodeMirror */
-	  .CodeMirror {
-		flex: 1;
-		height: 100%;
-		font-size: 14px;
-		background: var(--bg-main);
-		border-right: 1px solid var(--border-color);
-	  }
+      /* CodeMirror */
+      .CodeMirror {
+        flex: 1;
+        height: 100%;
+        font-size: 14px;
+        background: var(--bg-main);
+        border-right: 1px solid var(--border-color);
+      }
 
-	  .preview-frame {
-		flex: 1;
-		border: none;
-		background: #f1f1f1;
-	  }
+      .preview-frame {
+        flex: 1;
+        border: none;
+        background: #f1f1f1;
+      }
 
-	  .preview-frame[style*="display: none"] {
-		position: absolute;
-		visibility: hidden;
-	  }
-	</style>
+      .preview-frame[style*="display: none"] {
+        position: absolute;
+        visibility: hidden;
+      }
+    </style>
   </head>
   <body>
-	<div class="header">
-	  <h1>Approosters - Polaris web components playground</h1>
-	</div>
+    <div class="header">
+      <h1>Approosters - Polaris web components playground</h1>
+    </div>
 
-	<div class="container">
-	  <textarea id="editor"><s-page heading="Settings" inlineSize="small">
+    <div class="container">
+      <textarea id="editor"></textarea>
+
+      <iframe id="preview1" class="preview-frame"></iframe>
+      <iframe
+        id="preview2"
+        class="preview-frame"
+        style="display: none"
+      ></iframe>
+    </div>
+
+    <script>
+      // Double-buffered iframes for flash-free updates
+      const previews = [
+        document.getElementById("preview1"),
+        document.getElementById("preview2"),
+      ];
+      let activeIndex = 0;
+
+      const TEMPLATE_CODE = `<s-page heading="Settings" inlineSize="small">
 	<s-section heading="Store Information">
 		<s-text-field
 			label="Store name"
@@ -253,42 +271,31 @@
 			</s-box>
 		</s-stack>
 	</s-section>
-</s-page></textarea>
+</s-page>`;
 
-	  <iframe id="preview1" class="preview-frame"></iframe>
-	  <iframe id="preview2" class="preview-frame" style="display: none;"></iframe>
-	</div>
+      // CodeMirror setup
+      const editor = CodeMirror.fromTextArea(
+        document.getElementById("editor"),
+        {
+          mode: "text/html",
+          theme: "material-darker",
+          lineNumbers: true,
+          tabSize: 4,
+          indentUnit: 4,
+          indentWithTabs: true,
+        },
+      );
+      editor.setValue(TEMPLATE_CODE);
 
-	<script>
-	  // Double-buffered iframes for flash-free updates
-	  const previews = [
-		document.getElementById("preview1"),
-		document.getElementById("preview2"),
-	  ];
-	  let activeIndex = 0;
+      // Expand self-closing custom elements
+      function normalizeCustomElements(html) {
+        return html.replace(
+          /<([a-z]+-[a-z0-9-]+)([^>]*)\s*\/>/gi,
+          "<$1$2></$1>",
+        );
+      }
 
-	  // CodeMirror setup
-	  const editor = CodeMirror.fromTextArea(
-		document.getElementById("editor"),
-		{
-		  mode: "text/html",
-		  theme: "material-darker",
-		  lineNumbers: true,
-		  tabSize: 4,
-		  indentUnit: 4,
-		  indentWithTabs: true,
-		},
-	  );
-
-	  // Expand self-closing custom elements
-	  function normalizeCustomElements(html) {
-		return html.replace(
-		  /<([a-z]+-[a-z0-9-]+)([^>]*)\s*\/>/gi,
-		  "<$1$2></$1>",
-		);
-	  }
-
-	  const POLARIS_HTML = `
+      const POLARIS_HTML = `
 \x3C!DOCTYPE html>
 \x3Chtml lang="en">
 \x3Chead>
@@ -309,25 +316,25 @@
 \x3C/html>
 			`;
 
-	  function updatePreview() {
-		const raw = editor.getValue();
-		const normalized = normalizeCustomElements(raw);
-		const nextIndex = 1 - activeIndex;
-		const nextFrame = previews[nextIndex];
-		const currentFrame = previews[activeIndex];
+      function updatePreview() {
+        const raw = editor.getValue();
+        const normalized = normalizeCustomElements(raw);
+        const nextIndex = 1 - activeIndex;
+        const nextFrame = previews[nextIndex];
+        const currentFrame = previews[activeIndex];
 
-		nextFrame.onload = () => {
-		  // Swap visibility: show the newly loaded frame, hide the old one
-		  currentFrame.style.display = "none";
-		  nextFrame.style.display = "block";
-		  activeIndex = nextIndex;
-		};
+        nextFrame.onload = () => {
+          // Swap visibility: show the newly loaded frame, hide the old one
+          currentFrame.style.display = "none";
+          nextFrame.style.display = "block";
+          activeIndex = nextIndex;
+        };
 
-		nextFrame.srcdoc = POLARIS_HTML.replace("{{CONTENT}}", normalized);
-	  }
+        nextFrame.srcdoc = POLARIS_HTML.replace("{{CONTENT}}", normalized);
+      }
 
-	  editor.on("change", updatePreview);
-	  updatePreview();
-	</script>
+      editor.on("change", updatePreview);
+      updatePreview();
+    </script>
   </body>
 </html>
