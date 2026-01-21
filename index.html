@@ -5,10 +5,7 @@
     <title>Approosters - Polaris web components playground</title>
 
     <!-- CodeMirror -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css"
@@ -191,16 +188,9 @@
     <div class="header">
       <h1>Approosters - Polaris web components playground</h1>
       <div class="controls">
-        <label
-          ><input type="checkbox" id="toggleEditor" checked /> Editor</label
-        >
-        <label
-          ><input type="checkbox" id="togglePreview" checked /> Preview</label
-        >
-        <label
-          ><input type="checkbox" id="toggleDocs" checked />
-          Documentation</label
-        >
+        <label><input type="checkbox" id="toggleEditor" checked /> Editor</label>
+        <label><input type="checkbox" id="togglePreview" checked /> Preview</label>
+        <label><input type="checkbox" id="toggleDocs" checked /> Documentation</label>
       </div>
     </div>
 
@@ -215,11 +205,7 @@
 
         <div id="previewPane" class="pane-content">
           <iframe id="preview1" class="preview-frame"></iframe>
-          <iframe
-            id="preview2"
-            class="preview-frame"
-            style="display: none"
-          ></iframe>
+          <iframe id="preview2" class="preview-frame" style="display: none"></iframe>
         </div>
       </div>
 
@@ -238,10 +224,7 @@
 
     <script>
       // Double-buffered iframes for flash-free updates
-      const previews = [
-        document.getElementById("preview1"),
-        document.getElementById("preview2"),
-      ];
+      const previews = [document.getElementById("preview1"), document.getElementById("preview2")];
       let activeIndex = 0;
 
       const TEMPLATE_CODE = `<s-page heading="Settings" inlineSize="small">
@@ -416,25 +399,19 @@
 </s-page>`;
 
       // CodeMirror setup
-      const editor = CodeMirror.fromTextArea(
-        document.getElementById("editor"),
-        {
-          mode: "text/html",
-          theme: "material-darker",
-          lineNumbers: true,
-          tabSize: 4,
-          indentUnit: 4,
-          indentWithTabs: true,
-        },
-      );
+      const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+        mode: "text/html",
+        theme: "material-darker",
+        lineNumbers: true,
+        tabSize: 4,
+        indentUnit: 4,
+        indentWithTabs: true,
+      });
       editor.setValue(TEMPLATE_CODE);
 
       // Expand self-closing custom elements
       function normalizeCustomElements(html) {
-        return html.replace(
-          /<([a-z]+-[a-z0-9-]+)([^>]*)\s*\/>/gi,
-          "<$1$2></$1>",
-        );
+        return html.replace(/<([a-z]+-[a-z0-9-]+)([^>]*)\s*\/>/gi, "<$1$2></$1>");
       }
 
       const POLARIS_HTML = `
@@ -534,10 +511,7 @@
           // Constraints
           const minHeight = 50;
           const maxPos = totalHeight - minHeight;
-          const constrainedY = Math.max(
-            minHeight,
-            Math.min(pointerRelativeY, maxPos),
-          );
+          const constrainedY = Math.max(minHeight, Math.min(pointerRelativeY, maxPos));
 
           // Disconnect flex grow to use precise pixels
           workspace.style.flex = "none";
@@ -553,10 +527,7 @@
 
           const minWidth = 400;
           const maxWidth = workspaceRect.width - minWidth;
-          const constrainedX = Math.max(
-            minWidth,
-            Math.min(pointerRelativeX, maxWidth),
-          );
+          const constrainedX = Math.max(minWidth, Math.min(pointerRelativeX, maxWidth));
 
           editorPane.style.flex = "none";
           previewPane.style.flex = "none";
@@ -626,14 +597,10 @@
 
       // Helper: Iframe pointer events
       function disableIframes() {
-        document
-          .querySelectorAll("iframe")
-          .forEach((iframe) => (iframe.style.pointerEvents = "none"));
+        document.querySelectorAll("iframe").forEach((iframe) => (iframe.style.pointerEvents = "none"));
       }
       function enableIframes() {
-        document
-          .querySelectorAll("iframe")
-          .forEach((iframe) => (iframe.style.pointerEvents = ""));
+        document.querySelectorAll("iframe").forEach((iframe) => (iframe.style.pointerEvents = ""));
       }
     </script>
   </body>
