@@ -1,311 +1,333 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <title>Approosters - Polaris web components playground</title>
+	<meta charset="UTF-8" />
+	<title>Approosters - Polaris web components playground</title>
 
-    <!-- CodeMirror -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+	<!-- CodeMirror -->
+	<link
+	  rel="stylesheet"
+	  href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"
+	/>
+	<link
+	  rel="stylesheet"
+	  href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css"
+	/>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
 
-    <style>
-      :root {
-        --bg-main: #1e1e1e;
-        --bg-header: #252526;
-        --border-color: #333333;
-        --text-primary: #cccccc;
-      }
+	<style>
+	  :root {
+		--bg-main: #1e1e1e;
+		--bg-header: #252526;
+		--border-color: #333333;
+		--text-primary: #cccccc;
+	  }
 
-      body {
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        background: var(--bg-main);
-        color: var(--text-primary);
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-      }
+	  body {
+		margin: 0;
+		height: 100vh;
+		display: flex;
+		flex-direction: column;
+		background: var(--bg-main);
+		color: var(--text-primary);
+		font-family:
+		  system-ui,
+		  -apple-system,
+		  sans-serif;
+	  }
 
-      .header {
-        padding: 12px 20px;
-        background: var(--bg-header);
-        border-bottom: 1px solid var(--border-color);
-      }
+	  .header {
+		padding: 12px 20px;
+		background: var(--bg-header);
+		border-bottom: 1px solid var(--border-color);
+	  }
 
-      .header h1 {
-        font-size: 14px;
-        font-weight: 600;
-        margin: 0;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-      }
+	  .header h1 {
+		font-size: 14px;
+		font-weight: 600;
+		margin: 0;
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+	  }
 
-      .container {
-        flex: 1;
-        display: flex;
-        overflow: hidden;
-      }
+	  .container {
+		flex: 1;
+		display: flex;
+		overflow: hidden;
+	  }
 
-      /* CodeMirror */
-      .CodeMirror {
-        flex: 1;
-        height: 100%;
-        font-size: 14px;
-        background: var(--bg-main);
-        border-right: 1px solid var(--border-color);
-      }
+	  /* CodeMirror */
+	  .CodeMirror {
+		flex: 1;
+		height: 100%;
+		font-size: 14px;
+		background: var(--bg-main);
+		border-right: 1px solid var(--border-color);
+	  }
 
-      #preview {
-        flex: 1;
-        border: none;
-        background: #f1f1f1;
-      }
-    </style>
+	  .preview-frame {
+		flex: 1;
+		border: none;
+		background: #f1f1f1;
+	  }
+
+	  .preview-frame[style*="display: none"] {
+		position: absolute;
+		visibility: hidden;
+	  }
+	</style>
   </head>
   <body>
-    <div class="header">
-      <h1>Approosters - Polaris web components playground</h1>
-    </div>
+	<div class="header">
+	  <h1>Approosters - Polaris web components playground</h1>
+	</div>
 
-    <div class="container">
-      <textarea id="editor"><s-page heading="Settings" inlineSize="small">
-    <s-section heading="Store Information">
-        <s-text-field
-            label="Store name"
-            name="store-name"
-            value="Approosters Store"
-            placeholder="Enter store name"
-        />
-        <s-text-field
-            label="Business address"
-            name="business-address"
-            value="123 Main St, Anytown, USA"
-            placeholder="Enter business address"
-        />
-        <s-text-field
-            label="Store phone"
-            name="store-phone"
-            value="+1 (555) 123-4567"
-            placeholder="Enter phone number"
-        />
-        <s-choice-list label="Primary currency" name="currency">
-            <s-choice value="usd" selected>
-                US Dollar ($)
-            </s-choice>
-            <s-choice value="cad">Canadian Dollar (CAD)</s-choice>
-            <s-choice value="eur">Euro (€)</s-choice>
-        </s-choice-list>
-    </s-section>
+	<div class="container">
+	  <textarea id="editor"><s-page heading="Settings" inlineSize="small">
+	<s-section heading="Store Information">
+		<s-text-field
+			label="Store name"
+			name="store-name"
+			value="Approosters Store"
+			placeholder="Enter store name"
+		/>
+		<s-text-field
+			label="Business address"
+			name="business-address"
+			value="123 Main St, Anytown, USA"
+			placeholder="Enter business address"
+		/>
+		<s-text-field
+			label="Store phone"
+			name="store-phone"
+			value="+1 (555) 123-4567"
+			placeholder="Enter phone number"
+		/>
+		<s-choice-list label="Primary currency" name="currency">
+			<s-choice value="usd" selected>
+				US Dollar ($)
+			</s-choice>
+			<s-choice value="cad">Canadian Dollar (CAD)</s-choice>
+			<s-choice value="eur">Euro (€)</s-choice>
+		</s-choice-list>
+	</s-section>
 
-    <s-section heading="Notifications">
-        <s-select
-            label="Notification frequency"
-            name="notification-frequency"
-        >
-            <s-option value="immediately" selected>
-                Immediately
-            </s-option>
-            <s-option value="hourly">Hourly digest</s-option>
-            <s-option value="daily">Daily digest</s-option>
-        </s-select>
-        <s-choice-list
-            label="Notification types"
-            name="notifications-type"
-            multiple
-        >
-            <s-choice value="new-order" selected>
-                New order notifications
-            </s-choice>
-            <s-choice value="low-stock">Low stock alerts</s-choice>
-            <s-choice value="customer-review">
-                Customer review notifications
-            </s-choice>
-            <s-choice value="shipping-updates">Shipping updates</s-choice>
-        </s-choice-list>
-    </s-section>
+	<s-section heading="Notifications">
+		<s-select
+			label="Notification frequency"
+			name="notification-frequency"
+		>
+			<s-option value="immediately" selected>
+				Immediately
+			</s-option>
+			<s-option value="hourly">Hourly digest</s-option>
+			<s-option value="daily">Daily digest</s-option>
+		</s-select>
+		<s-choice-list
+			label="Notification types"
+			name="notifications-type"
+			multiple
+		>
+			<s-choice value="new-order" selected>
+				New order notifications
+			</s-choice>
+			<s-choice value="low-stock">Low stock alerts</s-choice>
+			<s-choice value="customer-review">
+				Customer review notifications
+			</s-choice>
+			<s-choice value="shipping-updates">Shipping updates</s-choice>
+		</s-choice-list>
+	</s-section>
 
-    <s-section heading="Preferences">
-        <s-box border="base" borderRadius="base">
-            <s-clickable
-                padding="small-100"
-                accessibilityLabel="Configure shipping methods, rates, and fulfillment options"
-            >
-                <s-grid
-                    gridTemplateColumns="1fr auto"
-                    alignItems="center"
-                    gap="base"
-                >
-                    <s-box>
-                        <s-heading>Shipping & fulfillment</s-heading>
-                        <s-paragraph color="subdued">
-                            Shipping methods, rates, zones, and fulfillment preferences.
-                        </s-paragraph>
-                    </s-box>
-                    <s-icon type="chevron-right" />
-                </s-grid>
-            </s-clickable>
-            <s-box paddingInline="small-100">
-                <s-divider />
-            </s-box>
+	<s-section heading="Preferences">
+		<s-box border="base" borderRadius="base">
+			<s-clickable
+				padding="small-100"
+				accessibilityLabel="Configure shipping methods, rates, and fulfillment options"
+			>
+				<s-grid
+					gridTemplateColumns="1fr auto"
+					alignItems="center"
+					gap="base"
+				>
+					<s-box>
+						<s-heading>Shipping & fulfillment</s-heading>
+						<s-paragraph color="subdued">
+							Shipping methods, rates, zones, and fulfillment preferences.
+						</s-paragraph>
+					</s-box>
+					<s-icon type="chevron-right" />
+				</s-grid>
+			</s-clickable>
+			<s-box paddingInline="small-100">
+				<s-divider />
+			</s-box>
 
-            <s-clickable
-                padding="small-100"
-                accessibilityLabel="Configure product defaults, customer experience, and catalog settings"
-            >
-                <s-grid
-                    gridTemplateColumns="1fr auto"
-                    alignItems="center"
-                    gap="base"
-                >
-                    <s-box>
-                        <s-heading>Products & catalog</s-heading>
-                        <s-paragraph color="subdued">
-                            Product defaults, customer experience, and catalog display
-                            options.
-                        </s-paragraph>
-                    </s-box>
-                    <s-icon type="chevron-right" />
-                </s-grid>
-            </s-clickable>
-            <s-box paddingInline="small-100">
-                <s-divider />
-            </s-box>
+			<s-clickable
+				padding="small-100"
+				accessibilityLabel="Configure product defaults, customer experience, and catalog settings"
+			>
+				<s-grid
+					gridTemplateColumns="1fr auto"
+					alignItems="center"
+					gap="base"
+				>
+					<s-box>
+						<s-heading>Products & catalog</s-heading>
+						<s-paragraph color="subdued">
+							Product defaults, customer experience, and catalog display
+							options.
+						</s-paragraph>
+					</s-box>
+					<s-icon type="chevron-right" />
+				</s-grid>
+			</s-clickable>
+			<s-box paddingInline="small-100">
+				<s-divider />
+			</s-box>
 
-            <s-clickable
-                padding="small-100"
-                accessibilityLabel="Manage customer support settings and help resources"
-            >
-                <s-grid
-                    gridTemplateColumns="1fr auto"
-                    alignItems="center"
-                    gap="base"
-                >
-                    <s-box>
-                        <s-heading>Customer support</s-heading>
-                        <s-paragraph color="subdued">
-                            Support settings, help resources, and customer service
-                            tools.
-                        </s-paragraph>
-                    </s-box>
-                    <s-icon type="chevron-right" />
-                </s-grid>
-            </s-clickable>
-        </s-box>
-    </s-section>
+			<s-clickable
+				padding="small-100"
+				accessibilityLabel="Manage customer support settings and help resources"
+			>
+				<s-grid
+					gridTemplateColumns="1fr auto"
+					alignItems="center"
+					gap="base"
+				>
+					<s-box>
+						<s-heading>Customer support</s-heading>
+						<s-paragraph color="subdued">
+							Support settings, help resources, and customer service
+							tools.
+						</s-paragraph>
+					</s-box>
+					<s-icon type="chevron-right" />
+				</s-grid>
+			</s-clickable>
+		</s-box>
+	</s-section>
 
-    <s-section heading="Tools">
-        <s-stack
-            gap="none"
-            border="base"
-            borderRadius="base"
-            overflow="hidden"
-        >
-            <s-box padding="small-100">
-                <s-grid
-                    gridTemplateColumns="1fr auto"
-                    alignItems="center"
-                    gap="base"
-                >
-                    <s-box>
-                        <s-heading>Reset app settings</s-heading>
-                        <s-paragraph color="subdued">
-                            Reset all settings to their default values. This action
-                            cannot be undone.
-                        </s-paragraph>
-                    </s-box>
-                    <s-button tone="critical">Reset</s-button>
-                </s-grid>
-            </s-box>
-            <s-box paddingInline="small-100">
-                <s-divider />
-            </s-box>
+	<s-section heading="Tools">
+		<s-stack
+			gap="none"
+			border="base"
+			borderRadius="base"
+			overflow="hidden"
+		>
+			<s-box padding="small-100">
+				<s-grid
+					gridTemplateColumns="1fr auto"
+					alignItems="center"
+					gap="base"
+				>
+					<s-box>
+						<s-heading>Reset app settings</s-heading>
+						<s-paragraph color="subdued">
+							Reset all settings to their default values. This action
+							cannot be undone.
+						</s-paragraph>
+					</s-box>
+					<s-button tone="critical">Reset</s-button>
+				</s-grid>
+			</s-box>
+			<s-box paddingInline="small-100">
+				<s-divider />
+			</s-box>
 
-            <s-box padding="small-100">
-                <s-grid
-                    gridTemplateColumns="1fr auto"
-                    alignItems="center"
-                    gap="base"
-                >
-                    <s-box>
-                        <s-heading>Export settings</s-heading>
-                        <s-paragraph color="subdued">
-                            Download a backup of all your current settings.
-                        </s-paragraph>
-                    </s-box>
-                    <s-button>Export</s-button>
-                </s-grid>
-            </s-box>
-        </s-stack>
-    </s-section>
+			<s-box padding="small-100">
+				<s-grid
+					gridTemplateColumns="1fr auto"
+					alignItems="center"
+					gap="base"
+				>
+					<s-box>
+						<s-heading>Export settings</s-heading>
+						<s-paragraph color="subdued">
+							Download a backup of all your current settings.
+						</s-paragraph>
+					</s-box>
+					<s-button>Export</s-button>
+				</s-grid>
+			</s-box>
+		</s-stack>
+	</s-section>
 </s-page></textarea>
 
-      <iframe id="preview"></iframe>
-    </div>
+	  <iframe id="preview1" class="preview-frame"></iframe>
+	  <iframe id="preview2" class="preview-frame" style="display: none;"></iframe>
+	</div>
 
-    <script>
-      const preview = document.getElementById("preview");
+	<script>
+	  // Double-buffered iframes for flash-free updates
+	  const previews = [
+		document.getElementById("preview1"),
+		document.getElementById("preview2"),
+	  ];
+	  let activeIndex = 0;
 
-      // CodeMirror setup
-      const editor = CodeMirror.fromTextArea(
-        document.getElementById("editor"),
-        {
-          mode: "text/html",
-          theme: "material-darker",
-          lineNumbers: true,
-          tabSize: 4,
-          indentUnit: 4,
-          indentWithTabs: false,
-        },
-      );
+	  // CodeMirror setup
+	  const editor = CodeMirror.fromTextArea(
+		document.getElementById("editor"),
+		{
+		  mode: "text/html",
+		  theme: "material-darker",
+		  lineNumbers: true,
+		  tabSize: 4,
+		  indentUnit: 4,
+		  indentWithTabs: true,
+		},
+	  );
 
-      // Expand self-closing custom elements
-      function normalizeCustomElements(html) {
-        return html.replace(
-          /<([a-z]+-[a-z0-9-]+)([^>]*)\s*\/>/gi,
-          "<$1$2></$1>",
-        );
-      }
+	  // Expand self-closing custom elements
+	  function normalizeCustomElements(html) {
+		return html.replace(
+		  /<([a-z]+-[a-z0-9-]+)([^>]*)\s*\/>/gi,
+		  "<$1$2></$1>",
+		);
+	  }
 
-      const POLARIS_HTML = `
+	  const POLARIS_HTML = `
 \x3C!DOCTYPE html>
 \x3Chtml lang="en">
 \x3Chead>
-    \x3Cmeta charset="UTF-8" />
-    \x3Cscript type="module" src="https://cdn.shopify.com/shopifycloud/polaris.js">\x3C/script>
-    \x3Cstyle>
-        body {
-            padding: 24px;
-            margin: 0;
-            font-family: system-ui, -apple-system, sans-serif;
-            background: #f1f1f1;
-        }
-    \x3C/style>
+	\x3Cmeta charset="UTF-8" />
+	\x3Cscript type="module" src="https://cdn.shopify.com/shopifycloud/polaris.js">\x3C/script>
+	\x3Cstyle>
+		body {
+			padding: 24px;
+			margin: 0;
+			font-family: system-ui, -apple-system, sans-serif;
+			background: #f1f1f1;
+		}
+	\x3C/style>
 \x3C/head>
 \x3Cbody>
 {{CONTENT}}
 \x3C/body>
 \x3C/html>
-            `;
+			`;
 
-      function updatePreview() {
-        const raw = editor.getValue();
-        const normalized = normalizeCustomElements(raw);
-        preview.srcdoc = POLARIS_HTML.replace("{{CONTENT}}", normalized);
-      }
+	  function updatePreview() {
+		const raw = editor.getValue();
+		const normalized = normalizeCustomElements(raw);
+		const nextIndex = 1 - activeIndex;
+		const nextFrame = previews[nextIndex];
+		const currentFrame = previews[activeIndex];
 
-      editor.on("change", updatePreview);
-      updatePreview();
-    </script>
+		nextFrame.onload = () => {
+		  // Swap visibility: show the newly loaded frame, hide the old one
+		  currentFrame.style.display = "none";
+		  nextFrame.style.display = "block";
+		  activeIndex = nextIndex;
+		};
+
+		nextFrame.srcdoc = POLARIS_HTML.replace("{{CONTENT}}", normalized);
+	  }
+
+	  editor.on("change", updatePreview);
+	  updatePreview();
+	</script>
   </body>
 </html>
