@@ -13,6 +13,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
 
+    <!-- CodeMirror folding -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/xml-fold.min.js"></script>
+
+    <!-- CodeMirror search / replace -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/searchcursor.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/jump-to-line.min.js"></script>
+
     <style>
       :root {
         --bg-main: #1e1e1e;
@@ -55,6 +74,7 @@
       .controls {
         display: flex;
         gap: 15px;
+        align-items: center;
         font-size: 13px;
       }
 
@@ -64,6 +84,36 @@
         gap: 6px;
         cursor: pointer;
         user-select: none;
+      }
+
+      .controls-divider {
+        width: 1px;
+        height: 16px;
+        background: var(--border-color);
+        margin: 0 4px;
+      }
+
+      .btn {
+        background: #333;
+        border: 1px solid var(--border-color);
+        color: #ddd;
+        padding: 4px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        font-family: inherit;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .btn:hover {
+        background: #444;
+      }
+
+      .btn:active {
+        background: #222;
       }
 
       /* Main layout */
@@ -191,6 +241,11 @@
         <label><input type="checkbox" id="toggleEditor" checked /> Editor</label>
         <label><input type="checkbox" id="togglePreview" checked /> Preview</label>
         <label><input type="checkbox" id="toggleDocs" checked /> Documentation</label>
+        <div class="controls-divider"></div>
+        <button id="importBtn" class="btn">Import from file</button>
+        <button id="exportBtn" class="btn">Export to file</button>
+        <button id="copyBtn" class="btn">Copy to clipboard</button>
+        <input type="file" id="fileInput" style="display: none" accept=".txt" />
       </div>
     </div>
 
@@ -406,8 +461,17 @@
         tabSize: 4,
         indentUnit: 4,
         indentWithTabs: true,
+        foldGutter: true,
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
       });
-      editor.setValue(TEMPLATE_CODE);
+      // Load from localStorage or fall back to default template
+      const savedContent = localStorage.getItem("approosters_polaris_playground_content");
+      editor.setValue(savedContent || TEMPLATE_CODE);
+
+      // Save content on window unload
+      window.addEventListener("beforeunload", () => {
+        localStorage.setItem("approosters_polaris_playground_content", editor.getValue());
+      });
 
       // Expand self-closing custom elements
       function normalizeCustomElements(html) {
@@ -470,6 +534,9 @@
       const togglePreview = document.getElementById("togglePreview");
       const toggleDocs = document.getElementById("toggleDocs");
 
+      // Persist user-adjusted documentation pane height
+      let lastDocsHeight = null;
+
       // Shared resize state
       let isResizingV = false;
       let isResizingH = false;
@@ -517,6 +584,8 @@
           workspace.style.flex = "none";
           docPane.style.flex = "none";
 
+          lastDocsHeight = totalHeight - constrainedY - resizerV.offsetHeight;
+
           workspace.style.height = `${constrainedY}px`;
           docPane.style.height = `${totalHeight - constrainedY - resizerV.offsetHeight}px`;
         }
@@ -551,49 +620,136 @@
         }
       });
 
-      // Visibility toggles
       function updateLayoutVisibility() {
-        // Toggle classes
-        if (toggleEditor.checked) editorPane.classList.remove("hidden");
-        else editorPane.classList.add("hidden");
+        const editorOn = toggleEditor.checked;
+        const previewOn = togglePreview.checked;
+        const docsOn = toggleDocs.checked;
 
-        if (togglePreview.checked) previewPane.classList.remove("hidden");
-        else previewPane.classList.add("hidden");
+        const workspaceVisible = editorOn || previewOn;
 
-        if (toggleDocs.checked) {
-          docPane.classList.remove("hidden");
-          resizerV.classList.remove("hidden");
-        } else {
-          docPane.classList.add("hidden");
-          resizerV.classList.add("hidden");
+        // Visibility toggles
+        workspace.classList.toggle("hidden", !workspaceVisible);
+        docPane.classList.toggle("hidden", !docsOn);
+        resizerV.classList.toggle("hidden", !docsOn || !workspaceVisible);
+        resizerH.classList.toggle("hidden", !(editorOn && previewOn));
+
+        // Everything visible
+        if (workspaceVisible && docsOn) {
+            docPane.style.flex = "none";
+            // Restore last docs height if available
+            if (lastDocsHeight !== null) {
+              docPane.style.height = `${lastDocsHeight}px`;
+              workspace.style.height = `calc(100% - ${lastDocsHeight}px - ${resizerV.offsetHeight}px)`;
+            } else {
+              // Fallback default
+              docPane.style.flex = "1";
+              workspace.style.flex = "2";
+            }
+        } else if (workspaceVisible && !docsOn) {
           // If docs hidden, workspace takes full height
           workspace.style.flex = "1";
           workspace.style.height = "auto";
         }
 
-        // Horizontal resizer visibility
-        if (toggleEditor.checked && togglePreview.checked) {
-          resizerH.classList.remove("hidden");
-        } else {
-          resizerH.classList.add("hidden");
-          // If one is hidden, the other takes full width
-          if (toggleEditor.checked) {
-            editorPane.style.flex = "1";
-            editorPane.style.width = "auto";
-          }
-          if (togglePreview.checked) {
-            previewPane.style.flex = "1";
-            previewPane.style.width = "auto";
-          }
+        // Docs full height case
+        if (docsOn && !workspaceVisible) {
+          docPane.style.flex = "1";
+          docPane.style.height = "auto";
         }
 
-        // Refresh editor in case size changed drastically
+        if (!editorOn) editorPane.classList.add("hidden");
+        else editorPane.classList.remove("hidden");
+
+        if (!previewOn) previewPane.classList.add("hidden");
+        else previewPane.classList.remove("hidden");
+
         setTimeout(() => editor.refresh(), 0);
       }
 
       toggleEditor.addEventListener("change", updateLayoutVisibility);
       togglePreview.addEventListener("change", updateLayoutVisibility);
       toggleDocs.addEventListener("change", updateLayoutVisibility);
+
+      // Import / export logic
+      const importBtn = document.getElementById("importBtn");
+      const exportBtn = document.getElementById("exportBtn");
+      const fileInput = document.getElementById("fileInput");
+
+      exportBtn.addEventListener("click", async () => {
+        const content = editor.getValue();
+        const date = new Date();
+        const hours = date.getHours().toString().padStart(2, "0");
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const fileName = `polaris-${hours}-${minutes}.txt`;
+
+        try {
+          if (window.showSaveFilePicker) {
+            const handle = await window.showSaveFilePicker({
+              suggestedName: fileName,
+              types: [
+                {
+                  description: "Polaris web components file",
+                  accept: { "text/plain": [".txt"] },
+                },
+              ],
+            });
+            const writable = await handle.createWritable();
+            await writable.write(content);
+            await writable.close();
+          } else {
+            throw new Error("File system access API not supported");
+          }
+        } catch (err) {
+          if (err.name !== "AbortError") {
+            // Fallback to download
+            const blob = new Blob([content], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }
+        }
+      });
+
+      importBtn.addEventListener("click", () => {
+        fileInput.value = null; // Reset value so same file can be selected again
+        fileInput.click();
+      });
+
+      fileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const content = e.target.result;
+          editor.setValue(content);
+        };
+        reader.readAsText(file);
+      });
+
+      // Copy to clipboard logic
+      const copyBtn = document.getElementById("copyBtn");
+      copyBtn.addEventListener("click", async () => {
+        const content = editor.getValue();
+        try {
+          await navigator.clipboard.writeText(content);
+          const originalText = copyBtn.textContent;
+          copyBtn.textContent = "Copied to clipboard!";
+          copyBtn.style.background = "#2e7d32"; // Greenish success color
+          setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.style.background = "";
+          }, 1000);
+        } catch (err) {
+          console.error("Failed to copy text: ", err);
+          alert("Failed to copy to clipboard");
+        }
+      });
 
       // Helper: Iframe pointer events
       function disableIframes() {
