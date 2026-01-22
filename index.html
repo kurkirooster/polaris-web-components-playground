@@ -534,8 +534,10 @@
       const togglePreview = document.getElementById("togglePreview");
       const toggleDocs = document.getElementById("toggleDocs");
 
-      // Persist user-adjusted documentation pane height
+      // Persist user-adjusted pane height and width
       let lastDocsHeight = null;
+      let lastEditorWidth = null;
+      let lastPreviewWidth = null;
 
       // Shared resize state
       let isResizingV = false;
@@ -601,6 +603,9 @@
           editorPane.style.flex = "none";
           previewPane.style.flex = "none";
 
+          lastEditorWidth = editorPane.offsetWidth;
+          lastPreviewWidth = previewPane.offsetWidth;
+
           editorPane.style.width = `${constrainedX}px`;
           previewPane.style.width = `${workspaceRect.width - constrainedX - resizerH.offsetWidth}px`;
 
@@ -633,22 +638,41 @@
         resizerV.classList.toggle("hidden", !docsOn || !workspaceVisible);
         resizerH.classList.toggle("hidden", !(editorOn && previewOn));
 
-        // Everything visible
+        // Workspace and docs visible
         if (workspaceVisible && docsOn) {
-            docPane.style.flex = "none";
-            // Restore last docs height if available
-            if (lastDocsHeight !== null) {
-              docPane.style.height = `${lastDocsHeight}px`;
-              workspace.style.height = `calc(100% - ${lastDocsHeight}px - ${resizerV.offsetHeight}px)`;
-            } else {
-              // Fallback default
-              docPane.style.flex = "1";
-              workspace.style.flex = "2";
-            }
+          docPane.style.flex = "none";
+          // Restore last docs height if available
+          if (lastDocsHeight !== null) {
+            docPane.style.height = `${lastDocsHeight}px`;
+            workspace.style.height = `calc(100% - ${lastDocsHeight}px - ${resizerV.offsetHeight}px)`;
+          } else {
+            // Fallback default
+            docPane.style.flex = "1";
+            workspace.style.flex = "2";
+          }
         } else if (workspaceVisible && !docsOn) {
           // If docs hidden, workspace takes full height
           workspace.style.flex = "1";
           workspace.style.height = "auto";
+
+          // Reset documentation pane state
+          docPane.style.flex = "";
+          docPane.style.height = "";
+        }
+
+        if (editorOn && !previewOn) {
+          editorPane.style.width = "auto";
+          editorPane.style.flex = "1";
+          previewPane.style.flex = "none";
+        } else if (!editorOn && previewOn) {
+          editorPane.style.flex = "none";
+          previewPane.style.width = "auto";
+          previewPane.style.flex = "1";
+        } else if (editorOn && previewOn && lastEditorWidth && lastPreviewWidth) {
+          editorPane.style.flex = "none";
+          previewPane.style.flex = "none";
+          editorPane.style.width = `${lastEditorWidth}px`;
+          previewPane.style.width = `${lastPreviewWidth}px`;
         }
 
         // Docs full height case
