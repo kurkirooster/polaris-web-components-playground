@@ -473,9 +473,24 @@
         localStorage.setItem("approosters_polaris_playground_content", editor.getValue());
       });
 
-      // Expand self-closing custom elements
       function normalizeCustomElements(html) {
-        return html.replace(/<([a-z]+-[a-z0-9-]+)([^>]*)\s*\/>/gi, "<$1$2></$1>");
+        // Expand self-closing custom elements like <s-divider /> → <s-divider></s-divider>
+        html = html.replace(/<([a-z]+-[a-z0-9-]+)([^>]*)\s*\/>/gi, "<$1$2></$1>");
+
+        // Convert numeric JSX-style props {5} → "5"
+        let prev;
+        do {
+          prev = html;
+          html = html.replace(/(<[a-z]+-[a-z0-9-]+[^>]*?)\s+([a-zA-Z0-9-]+)=\{(\d+)\}/g, '$1 $2="$3"');
+        } while (html !== prev);
+
+        // Convert boolean JSX-style props {true}/{false} → "true"/"false"
+        do {
+          prev = html;
+          html = html.replace(/(<[a-z]+-[a-z0-9-]+[^>]*?)\s+([a-zA-Z0-9-]+)=\{(true|false)\}/gi, '$1 $2="$3"');
+        } while (html !== prev);
+
+        return html;
       }
 
       const POLARIS_HTML = `
